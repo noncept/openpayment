@@ -1,0 +1,76 @@
+{
+  "name": "openpayment",
+  "description": "OpenPayment SDK and CLI for creating x402 payment links",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "openpayment": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "test": "npm run build && node --test test/**/*.test.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run format:check && npm run test",
+    "cli:dev": "node --env-file=.env --experimental-strip-types src/cli.ts",
+    "cli:prod": "node --experimental-strip-types src/cli.ts",
+    "prepublishOnly": "npm run check",
+    "publish:dry-run": "npm run check && npm publish --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noncept/openpayment.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noncept/openpayment/issues"
+  },
+  "homepage": "https://openpayment.link",
+  "keywords": [
+    "openpayment",
+    "stablecoin",
+    "x402",
+    "usdc",
+    "base"
+  ],
+  "author": "NONCEPT (https://noncept.com)",
+  "contributors": [
+    {
+      "name": "Vittorio Minacori",
+      "url": "https://github.com/vittominacori"
+    }
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.11.0",
+    "eslint": "^10.0.2",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "rimraf": "^6.1.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  }
+}
