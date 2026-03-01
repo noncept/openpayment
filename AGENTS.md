@@ -1,4 +1,4 @@
-# AI Agent Guidelines for OpenPayment
+# AI Agent Guidelines for integrating OpenPayment SDK and CLI
 
 OpenPayment lets you create x402 stablecoin payment links that settle in USDC on Base.
 Links are hosted at [https://openpayment.link](https://openpayment.link).

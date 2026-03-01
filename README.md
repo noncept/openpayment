@@ -2,15 +2,15 @@
 
 [![NPM Package](https://img.shields.io/npm/v/openpayment.svg?style=flat-square)](https://www.npmjs.org/package/openpayment)
 [![CI](https://github.com/noncept/openpayment/actions/workflows/ci.yml/badge.svg)](https://github.com/noncept/openpayment/actions/workflows/ci.yml)
-[![MIT licensed](https://img.shields.io/github/license/noncept/openpayment.svg)](https://github.com/noncept/openpayment/blob/main/LICENSE)
+[![MIT licensed](https://img.shields.io/github/license/noncept/openpayment)](https://github.com/noncept/openpayment/blob/main/LICENSE)
 
 ## OpenPayment SDK + CLI
 
 SDK and CLI for creating x402 stablecoin payment links that settle in USDC on Base.
 
-Powered by OpenPayment on x402.
+Powered by OpenPayment and x402.
 
-## About OpenPayment Link
+## About OpenPayment
 
 OpenPayment lets merchants, creators, developers, and AI agents accept USDC payments with shareable payment links and APIs. 0% platform fees, instant settlement to recipient wallet, and no sign-up required. Powered by x402.
 
