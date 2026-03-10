@@ -2,7 +2,6 @@
 
 import { parseArgs } from "node:util";
 import { getCliConfig } from "./lib/config.ts";
-import { SUPPORTED_NETWORKS, SUPPORTED_TYPES } from "./lib/constants.ts";
 import { createWithConfig } from "./lib/create.ts";
 import type { CreatePaymentInput, PaymentType } from "./lib/types.ts";
 import { normalizePrice, validateCreateInput } from "./lib/validation.ts";
@@ -21,7 +20,7 @@ function printHelp(): void {
   console.log(`openpayment CLI
 
 Usage:
-  openpayment create --type <SINGLE_USE|MULTI_USE|VARIABLE> --price <amount> --payTo <address> --network <eip155:8453|eip155:84532> [--description <text>] [--json]
+  openpayment create --type <SINGLE_USE|MULTI_USE|VARIABLE|PROXY> --price <amount> --payTo <address> --network <eip155:8453|eip155:84532> [--description <text>] [--resourceUrl <https://...>] [--json]
 
 Example:
   openpayment create --type "SINGLE_USE" --price "0.001" --payTo "0xYourWalletAddress" --network "eip155:84532" --description "your description"
@@ -32,6 +31,7 @@ Options:
   --payTo            Recipient wallet address (required)
   --network          eip155:8453 or eip155:84532 (required)
   --description      Payment description
+  --resourceUrl      Required when --type is PROXY. Upstream private API URL.
   --json             Print JSON output only
   --help             Show help
 
@@ -54,6 +54,7 @@ function parseCreateFlags(args: string[]): CreateCommandOptions {
       payTo: { type: "string" },
       network: { type: "string" },
       description: { type: "string" },
+      resourceUrl: { type: "string" },
       json: { type: "boolean" },
       help: { type: "boolean" },
     },
@@ -78,6 +79,9 @@ function parseCreateFlags(args: string[]): CreateCommandOptions {
   if (!values.payTo) {
     throw new Error("Missing required flag --payTo");
   }
+  if (values.type === "PROXY" && !values.resourceUrl) {
+    throw new Error("Missing required flag --resourceUrl when --type is PROXY");
+  }
 
   const input: CreatePaymentInput = {
     type: values.type as PaymentType,
@@ -85,6 +89,7 @@ function parseCreateFlags(args: string[]): CreateCommandOptions {
     payTo: values.payTo,
     network: values.network,
     description: values.description,
+    resourceUrl: values.type === "PROXY" ? values.resourceUrl : undefined,
   };
 
   validateCreateInput(input);
@@ -93,14 +98,6 @@ function parseCreateFlags(args: string[]): CreateCommandOptions {
     input,
     json: values.json ?? false,
   };
-}
-
-/**
- * Prints additional allowed values for fast troubleshooting.
- */
-function printValidationHints(): void {
-  console.error(`Allowed --type: ${Array.from(SUPPORTED_TYPES).join(", ")}`);
-  console.error(`Allowed --network: ${Array.from(SUPPORTED_NETWORKS).join(", ")}`);
 }
 
 /**
@@ -135,10 +132,6 @@ async function main(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error";
     console.error(`Error: ${message}`);
-
-    if (message.startsWith("Invalid --type") || message.startsWith("Invalid --network")) {
-      printValidationHints();
-    }
 
     process.exit(1);
   }

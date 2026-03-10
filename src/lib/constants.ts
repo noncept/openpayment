@@ -17,6 +17,7 @@ export const SUPPORTED_TYPES: ReadonlySet<PaymentType> = new Set([
   "SINGLE_USE",
   "MULTI_USE",
   "VARIABLE",
+  "PROXY",
 ]);
 
 /**

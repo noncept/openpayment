@@ -1,5 +1,5 @@
 import type { CreatePaymentApiResponse, CreatePaymentInput } from "./types.ts";
-import { normalizePrice, validateCreateInput } from "./validation.ts";
+import { normalizeCreateInput } from "./validation.ts";
 
 interface ApiErrorBody {
   message?: string;
@@ -48,7 +48,7 @@ export async function createPayment(
   input: CreatePaymentInput,
   apiBaseUrl: string,
 ): Promise<CreatePaymentApiResponse> {
-  validateCreateInput(input);
+  const normalizedInput = normalizeCreateInput(input);
 
   const fetchImpl = globalThis.fetch;
   if (typeof fetchImpl !== "function") {
@@ -56,11 +56,18 @@ export async function createPayment(
   }
 
   const payload = {
-    type: input.type,
-    price: normalizePrice(input.price).trim(),
-    payTo: input.payTo.trim(),
-    network: input.network.trim(),
-    description: input.description,
+    type: normalizedInput.type,
+    price: normalizedInput.price,
+    payTo: normalizedInput.payTo,
+    network: normalizedInput.network,
+    description: normalizedInput.description,
+    resource:
+      normalizedInput.type === "PROXY"
+        ? {
+            type: "API",
+            url: normalizedInput.resourceUrl,
+          }
+        : undefined,
   };
 
   const response = await fetchImpl(`${normalizeApiUrl(apiBaseUrl)}/x-payments`, {

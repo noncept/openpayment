@@ -6,8 +6,9 @@ Links are hosted at [https://openpayment.link](https://openpayment.link).
 ## Install
 
 ```bash
-npm install openpayment       # SDK
-npm install -g openpayment    # CLI (global)
+npm install openpayment                                 # SDK
+npm install -g openpayment                              # CLI (global)
+npx skills add https://github.com/noncept/openpayment   # SKILL
 ```
 
 ## CLI
@@ -20,6 +21,7 @@ openpayment create \
   --price "<AMOUNT>" \
   --payTo "<EVM_ADDRESS>" \
   --network "<NETWORK>" \
+  [--resourceUrl "<HTTPS_URL_FOR_PROXY>"] \
   --description "<DESCRIPTION>"
 ```
 
@@ -80,14 +82,15 @@ Example:
 
 ### CLI flags
 
-| Flag            | Required | Description                                 |
-| --------------- | -------- | ------------------------------------------- |
-| `--type`        | Yes      | `SINGLE_USE`, `MULTI_USE`, or `VARIABLE`    |
-| `--price`       | Yes      | Amount in USDC, e.g. `10` or `0.50`         |
-| `--payTo`       | Yes      | Recipient EVM address (`0x` + 40 hex chars) |
-| `--network`     | Yes      | CAIP-2 network ID                           |
-| `--description` | No       | Payment description, max 500 chars          |
-| `--json`        | No       | Print JSON output only                      |
+| Flag            | Required    | Description                                                         |
+| --------------- | ----------- | ------------------------------------------------------------------- |
+| `--type`        | Yes         | `SINGLE_USE`, `MULTI_USE`, `VARIABLE`, or `PROXY`                   |
+| `--price`       | Yes         | Amount in USDC, e.g. `10` or `0.50`                                 |
+| `--payTo`       | Yes         | Recipient EVM address (`0x` + 40 hex chars)                         |
+| `--network`     | Yes         | CAIP-2 network ID                                                   |
+| `--resourceUrl` | Conditional | Required when `--type` is `PROXY`; upstream API URL (`https://...`) |
+| `--description` | No          | Payment description, max 500 chars                                  |
+| `--json`        | No          | Print JSON output only                                              |
 
 ## SDK
 
@@ -110,13 +113,14 @@ The `create()` function validates input locally before making any network call a
 
 ### Input fields
 
-| Field         | Type               | Required | Description                               |
-| ------------- | ------------------ | -------- | ----------------------------------------- |
-| `type`        | `string`           | Yes      | `SINGLE_USE`, `MULTI_USE`, or `VARIABLE`  |
-| `price`       | `string \| number` | Yes      | Positive USDC amount, e.g. `"10"` or `10` |
-| `payTo`       | `string`           | Yes      | Recipient EVM address                     |
-| `network`     | `string`           | Yes      | CAIP-2 network ID                         |
-| `description` | `string`           | No       | Payment description, max 500 chars        |
+| Field         | Type               | Required    | Description                                                     |
+| ------------- | ------------------ | ----------- | --------------------------------------------------------------- |
+| `type`        | `string`           | Yes         | `SINGLE_USE`, `MULTI_USE`, `VARIABLE`, or `PROXY`               |
+| `price`       | `string \| number` | Yes         | Positive USDC amount, e.g. `"10"` or `10`                       |
+| `payTo`       | `string`           | Yes         | Recipient EVM address                                           |
+| `network`     | `string`           | Yes         | CAIP-2 network ID                                               |
+| `description` | `string`           | No          | Payment description, max 500 chars                              |
+| `resourceUrl` | `string`           | Conditional | Required when `type` is `PROXY`; must be a valid `https://` URL |
 
 ### Return value
 
@@ -129,11 +133,12 @@ The `create()` function validates input locally before making any network call a
 
 ## Payment types
 
-| Type         | Use case                                                                |
-| ------------ | ----------------------------------------------------------------------- |
-| `SINGLE_USE` | One-time payment with fixed price (e.g., a specific order, invoice)     |
-| `MULTI_USE`  | Fixed price, can be paid multiple times (e.g., recurring product)       |
-| `VARIABLE`   | Reusable link; payer chooses amount per payment (e.g., tips, donations) |
+| Type         | Use case                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| `SINGLE_USE` | One-time payment with fixed price (e.g., a specific order, invoice)                             |
+| `MULTI_USE`  | Fixed price, can be paid multiple times (e.g., recurring product)                               |
+| `VARIABLE`   | Reusable link; payer chooses amount per payment (e.g., tips, donations)                         |
+| `PROXY`      | Fixed-price multi-use payment; after settlement, OpenPayment fetches a private upstream API URL |
 
 ## Networks
 
@@ -155,3 +160,4 @@ Support for custom ERC-20 tokens will be added soon.
 
 - Website: https://openpayment.link
 - GitHub: https://github.com/noncept/openpayment
+- SKILL: [SKILL.md](./skills/openpayment/SKILL.md)
