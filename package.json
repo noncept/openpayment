@@ -1,7 +1,7 @@
 {
   "name": "openpayment",
   "description": "OpenPayment SDK and CLI for creating x402 payment links",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "private": true,
   "main": "./dist/index.js",
@@ -31,6 +31,7 @@
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "test": "npm run build && node --test test/**/*.test.mjs",
+    "test:coverage": "npm run build && node --test --experimental-test-coverage test/**/*.test.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -66,8 +67,8 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.11.0",
-    "eslint": "^10.0.2",
+    "@types/node": "^24.12.0",
+    "eslint": "^10.0.3",
     "globals": "^17.4.0",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.3",

@@ -1,7 +1,7 @@
 /**
  * Supported payment types for OpenPayment create endpoint.
  */
-export type PaymentType = "SINGLE_USE" | "MULTI_USE" | "VARIABLE";
+export type PaymentType = "SINGLE_USE" | "MULTI_USE" | "VARIABLE" | "PROXY";
 
 /**
  * Input payload for payment creation.
@@ -12,6 +12,7 @@ export interface CreatePaymentInput {
   payTo: string;
   network: string;
   description?: string;
+  resourceUrl?: string;
 }
 
 /**

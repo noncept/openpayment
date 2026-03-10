@@ -5,11 +5,45 @@ import {
 } from "./constants.ts";
 import type { CreatePaymentInput } from "./types.ts";
 
+export interface NormalizedCreatePaymentInput {
+  type: CreatePaymentInput["type"];
+  price: string;
+  payTo: string;
+  network: string;
+  description?: string;
+  resourceUrl?: string;
+}
+
 /**
  * Validates EVM address shape.
  */
 function isEvmAddress(value: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(value);
+}
+
+/**
+ * Validates proxy resource URL shape and protocol.
+ */
+function isAllowedResourceUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validates proxy resource URL payload.
+ */
+function validateProxyResourceUrl(resourceUrl: string | undefined): void {
+  if (!resourceUrl) {
+    throw new Error("Invalid resourceUrl. PROXY payments require a valid resourceUrl.");
+  }
+
+  if (!isAllowedResourceUrl(resourceUrl.trim())) {
+    throw new Error("Invalid resourceUrl. Expected a valid https URL.");
+  }
 }
 
 /**
@@ -32,17 +66,28 @@ export function normalizePrice(price: string | number): string {
 }
 
 /**
- * Validates create request payload before network call.
+ * Normalizes and validates create request payload before network call.
  * Throws an Error with actionable text on invalid input.
  */
-export function validateCreateInput(input: CreatePaymentInput): void {
+export function normalizeCreateInput(
+  input: CreatePaymentInput,
+): NormalizedCreatePaymentInput {
   const normalizedPrice = normalizePrice(input.price).trim();
   const normalizedPayTo = input.payTo.trim();
   const normalizedNetwork = input.network.trim();
+  const normalizedResourceUrl = input.resourceUrl?.trim();
 
   if (!SUPPORTED_TYPES.has(input.type)) {
     throw new Error(
-      'Invalid type. Allowed values: "SINGLE_USE", "MULTI_USE", "VARIABLE".',
+      'Invalid type. Allowed values: "SINGLE_USE", "MULTI_USE", "VARIABLE", "PROXY".',
+    );
+  }
+
+  if (input.type === "PROXY") {
+    validateProxyResourceUrl(normalizedResourceUrl);
+  } else if (normalizedResourceUrl !== undefined) {
+    throw new Error(
+      "Invalid resourceUrl. resourceUrl is only supported when type is PROXY.",
     );
   }
 
@@ -69,4 +114,20 @@ export function validateCreateInput(input: CreatePaymentInput): void {
       );
     }
   }
+
+  return {
+    type: input.type,
+    price: normalizedPrice,
+    payTo: normalizedPayTo,
+    network: normalizedNetwork,
+    description: input.description,
+    resourceUrl: normalizedResourceUrl,
+  };
+}
+
+/**
+ * Validates create request payload before network call.
+ */
+export function validateCreateInput(input: CreatePaymentInput): void {
+  normalizeCreateInput(input);
 }

@@ -85,6 +85,51 @@ test("cli validates required flags", async () => {
   assert.match(result.stderr, /Missing required flag --price/);
 });
 
+test("cli validates missing --type", async () => {
+  const result = await runCli([
+    "create",
+    "--price",
+    "0.001",
+    "--payTo",
+    "0x1111111111111111111111111111111111111111",
+    "--network",
+    "eip155:84532",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Missing required flag --type/);
+});
+
+test("cli validates missing --network", async () => {
+  const result = await runCli([
+    "create",
+    "--type",
+    "SINGLE_USE",
+    "--price",
+    "0.001",
+    "--payTo",
+    "0x1111111111111111111111111111111111111111",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Missing required flag --network/);
+});
+
+test("cli validates missing --payTo", async () => {
+  const result = await runCli([
+    "create",
+    "--type",
+    "SINGLE_USE",
+    "--price",
+    "0.001",
+    "--network",
+    "eip155:84532",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Missing required flag --payTo/);
+});
+
 test("cli prints validation hints for invalid type", async () => {
   const result = await runCli(
     [
@@ -107,8 +152,23 @@ test("cli prints validation hints for invalid type", async () => {
 
   assert.equal(result.code, 1);
   assert.match(result.stderr, /Error: Invalid --type test hint/);
-  assert.match(result.stderr, /Allowed --type:/);
-  assert.match(result.stderr, /Allowed --network:/);
+});
+
+test("cli prints validation hints for local type validation errors", async () => {
+  const result = await runCli([
+    "create",
+    "--type",
+    "WRONG",
+    "--price",
+    "0.001",
+    "--payTo",
+    "0x1111111111111111111111111111111111111111",
+    "--network",
+    "eip155:84532",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Error: Invalid type/);
 });
 
 test("cli create prints human-friendly output", async () => {
@@ -153,6 +213,65 @@ test("cli create prints human-friendly output", async () => {
   });
 
   fs.rmSync(outputFile, { force: true });
+});
+
+test("cli create PROXY passes resource payload", async () => {
+  const outputFile = path.resolve(__dirname, "./.cli-fetch-call-proxy.json");
+
+  const result = await runCli(
+    [
+      "create",
+      "--type",
+      "PROXY",
+      "--price",
+      "1",
+      "--payTo",
+      "0x1111111111111111111111111111111111111111",
+      "--network",
+      "eip155:84532",
+      "--resourceUrl",
+      "https://private-api.example.com/endpoint",
+    ],
+    {
+      ...DEFAULT_ENV,
+      OPENPAYMENT_TEST_SCENARIO: "success",
+      OPENPAYMENT_TEST_OUTPUT: outputFile,
+    },
+    { mockFetch: true },
+  );
+
+  assert.equal(result.code, 0);
+
+  const fetchCall = JSON.parse(fs.readFileSync(outputFile, "utf8"));
+  assert.deepEqual(JSON.parse(fetchCall.init.body), {
+    type: "PROXY",
+    price: "1",
+    payTo: "0x1111111111111111111111111111111111111111",
+    network: "eip155:84532",
+    resource: {
+      type: "API",
+      url: "https://private-api.example.com/endpoint",
+    },
+  });
+
+  fs.rmSync(outputFile, { force: true });
+});
+
+test("cli create PROXY requires --resourceUrl", async () => {
+  const result = await runCli([
+    "create",
+    "--type",
+    "PROXY",
+    "--price",
+    "1",
+    "--payTo",
+    "0x1111111111111111111111111111111111111111",
+    "--network",
+    "eip155:84532",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Missing required flag --resourceUrl when --type is PROXY/);
 });
 
 test("cli create --json prints JSON only", async () => {

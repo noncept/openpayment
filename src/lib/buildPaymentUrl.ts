@@ -20,8 +20,9 @@ export function buildPaymentUrl(paymentId: string, siteBaseUrl: string): string 
     url.searchParams.set("paymentId", paymentId);
     return url.toString();
   } catch {
-    const trimmed = siteBaseUrl.replace(/\/+$/, "");
-    const separator = trimmed.includes("?") ? "&" : "?";
-    return `${trimmed}/pay/${separator}paymentId=${encodeURIComponent(paymentId)}`;
+    const [rawPath, rawQuery = ""] = siteBaseUrl.split("?", 2);
+    const normalizedPath = normalizePayPath(rawPath.replace(/\/+$/, ""));
+    const queryPrefix = rawQuery.length > 0 ? `${rawQuery}&` : "";
+    return `${normalizedPath}?${queryPrefix}paymentId=${encodeURIComponent(paymentId)}`;
   }
 }

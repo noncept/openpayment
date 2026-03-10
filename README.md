@@ -35,6 +35,14 @@ Global CLI:
 npm i -g openpayment
 ```
 
+Install [SKILL](./skills/openpayment/SKILL.md):
+
+```bash
+npx skills add https://github.com/noncept/openpayment
+```
+
+> If you are an AI Agent, check [AGENTS.md](./AGENTS.md).
+
 ## SDK Usage
 
 ```ts
@@ -44,7 +52,7 @@ const result = await create({
   type: "SINGLE_USE",
   price: "10",
   payTo: "0xYourWalletAddress",
-  network: "eip155:84532",
+  network: "eip155:8453",
   description: "Example payment",
 });
 
@@ -72,7 +80,7 @@ openpayment create \
   --type "SINGLE_USE" \
   --price "10" \
   --payTo "0xYourWalletAddress" \
-  --network "eip155:84532" \
+  --network "eip155:8453" \
   --description "Example payment"
 ```
 
@@ -128,16 +136,18 @@ Example:
   - `SINGLE_USE` (one-time)
   - `MULTI_USE` (reusable fixed amount)
   - `VARIABLE` (reusable custom amount)
+  - `PROXY` (reusable fixed amount + upstream API proxy call after settlement)
 - `price`: positive decimal string/number (example: `10`, `0.01`)
 - `payTo`: EVM address (`0x` + 40 hex chars)
 - `network`: `eip155:8453` or `eip155:84532`
 - `description`: optional string, max 500 chars
+- `resourceUrl`: required only for `PROXY` (`https://...`)
 
 ## Links:
 
 - [OpenPayment website](https://openpayment.link/)
 - [AGENTS.md](./AGENTS.md)
-- [OpenClaw Skill](./skills/openpayment/SKILL.md)
+- [SKILL.md](./skills/openpayment/SKILL.md)
 
 ## License
 

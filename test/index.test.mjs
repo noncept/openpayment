@@ -59,6 +59,43 @@ test("createWithConfig posts payload and returns paymentId + /pay/ url", async (
   );
 });
 
+test("createWithConfig maps PROXY resourceUrl to API resource payload", async () => {
+  let calledInit;
+
+  globalThis.fetch = async (_input, init) => {
+    calledInit = init;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ paymentId: "123e4567-e89b-12d3-a456-426614174000" }),
+    };
+  };
+
+  await createWithConfig(
+    {
+      ...VALID_INPUT,
+      type: "PROXY",
+      resourceUrl: "https://private-api.example.com/endpoint",
+    },
+    {
+      apiUrl: "https://api.example.test",
+      siteUrl: "https://site.example.test",
+    },
+  );
+
+  assert.deepEqual(JSON.parse(calledInit.body), {
+    type: "PROXY",
+    price: "0.001",
+    payTo: "0x1111111111111111111111111111111111111111",
+    network: "eip155:84532",
+    description: "test payment",
+    resource: {
+      type: "API",
+      url: "https://private-api.example.com/endpoint",
+    },
+  });
+});
+
 test("create uses SDK defaults and ignores env overrides", async () => {
   process.env.OPENPAYMENT_API_URL = "http://localhost:9999/dev";
   process.env.OPENPAYMENT_SITE_URL = "http://localhost:3000";
@@ -189,6 +226,70 @@ test("validation rejects unsupported type", () => {
   );
 });
 
+test("validation accepts PROXY with valid resourceUrl", () => {
+  assert.doesNotThrow(() =>
+    validateCreateInput({
+      ...VALID_INPUT,
+      type: "PROXY",
+      resourceUrl: "https://private-api.example.com/endpoint",
+    }),
+  );
+});
+
+test("validation rejects PROXY without resourceUrl", () => {
+  assert.throws(
+    () => validateCreateInput({ ...VALID_INPUT, type: "PROXY" }),
+    /PROXY payments require a valid resourceUrl/,
+  );
+});
+
+test("validation rejects non-PROXY with resourceUrl", () => {
+  assert.throws(
+    () =>
+      validateCreateInput({
+        ...VALID_INPUT,
+        resourceUrl: "https://private-api.example.com/endpoint",
+      }),
+    /resourceUrl is only supported when type is PROXY/,
+  );
+});
+
+test("validation rejects PROXY with invalid resource url", () => {
+  assert.throws(
+    () =>
+      validateCreateInput({
+        ...VALID_INPUT,
+        type: "PROXY",
+        resourceUrl: "ftp://private-api.example.com/endpoint",
+      }),
+    /Invalid resourceUrl/,
+  );
+});
+
+test("validation rejects PROXY with malformed resourceUrl", () => {
+  assert.throws(
+    () =>
+      validateCreateInput({
+        ...VALID_INPUT,
+        type: "PROXY",
+        resourceUrl: "https://%",
+      }),
+    /Invalid resourceUrl/,
+  );
+});
+
+test("validation rejects PROXY with http resourceUrl", () => {
+  assert.throws(
+    () =>
+      validateCreateInput({
+        ...VALID_INPUT,
+        type: "PROXY",
+        resourceUrl: "http://localhost:3000/internal-endpoint",
+      }),
+    /https URL/,
+  );
+});
+
 test("validation rejects invalid price", () => {
   assert.throws(
     () => validateCreateInput({ ...VALID_INPUT, price: "-1" }),
@@ -238,7 +339,7 @@ test("buildPaymentUrl normalizes path and keeps existing query", () => {
 
 test("buildPaymentUrl uses fallback for invalid base URL", () => {
   assert.equal(buildPaymentUrl("p1", "not-a-url"), "not-a-url/pay/?paymentId=p1");
-  assert.equal(buildPaymentUrl("p2", "not-a-url?x=1"), "not-a-url?x=1/pay/&paymentId=p2");
+  assert.equal(buildPaymentUrl("p2", "not-a-url?x=1"), "not-a-url/pay/?x=1&paymentId=p2");
 });
 
 test("buildPaymentUrl rejects invalid paymentId", () => {
