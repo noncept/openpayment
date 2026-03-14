@@ -9,6 +9,7 @@ Links are hosted at [https://openpayment.link](https://openpayment.link).
 npm install openpayment                                 # SDK
 npm install -g openpayment                              # CLI (global)
 npx skills add https://github.com/noncept/openpayment   # SKILL
+clawhub install openpayment                             # OpenClaw
 ```
 
 ## CLI

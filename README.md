@@ -38,7 +38,13 @@ npm i -g openpayment
 Install [SKILL](./skills/openpayment/SKILL.md):
 
 ```bash
+# OpenCode, Claude Code, Codex, Cursor...
 npx skills add https://github.com/noncept/openpayment
+```
+
+```bash
+# OpenClaw
+clawhub install openpayment
 ```
 
 > If you are an AI Agent, check [AGENTS.md](./AGENTS.md).
