@@ -1,9 +1,18 @@
 ---
 name: openpayment
-description: Create x402 stablecoin payment links using the OpenPayment CLI.
-homepage: https://openpayment.link
-# prettier-ignore
-metadata: {"openclaw": {"emoji": "💸", "requires": {"bins": ["node"]}, "install": [{"id": "node", "kind": "node", "package": "openpayment", "bins": ["openpayment"], "label": "Install OpenPayment CLI (npm)"}]}}
+description: Create x402 USDC payment links using the OpenPayment CLI.
+metadata:
+  version: "0.1.3"
+  openclaw:
+    requires:
+      bins:
+        - openpayment
+    install:
+      - kind: node
+        package: openpayment
+        bins:
+          - openpayment
+    homepage: https://openpayment.link
 ---
 
 # OpenPayment Skill

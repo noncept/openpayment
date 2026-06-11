@@ -1,7 +1,7 @@
 {
   "name": "openpayment",
   "description": "OpenPayment SDK and CLI for creating x402 payment links",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "private": true,
   "main": "./dist/index.js",
@@ -67,12 +67,12 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.12.2",
-    "eslint": "^10.2.0",
-    "globals": "^17.4.0",
-    "prettier": "^3.8.1",
+    "@types/node": "^24.13.2",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.4",
     "rimraf": "^6.1.3",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.1"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0"
   }
 }
