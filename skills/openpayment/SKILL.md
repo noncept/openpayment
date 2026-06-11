@@ -2,7 +2,6 @@
 name: openpayment
 description: Create x402 USDC payment links using the OpenPayment CLI.
 metadata:
-  version: "0.1.3"
   openclaw:
     requires:
       bins:
