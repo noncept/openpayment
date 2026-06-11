@@ -44,7 +44,7 @@ npx skills add https://github.com/noncept/openpayment
 
 ```bash
 # OpenClaw
-clawhub install openpayment
+openclaw skills install openpayment
 ```
 
 > If you are an AI Agent, check [AGENTS.md](./AGENTS.md).
