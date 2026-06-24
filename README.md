@@ -1,6 +1,6 @@
 # <img src="./logo.png" alt="OpenPayment" height="40px">
 
-[![NPM Package](https://img.shields.io/npm/v/openpayment.svg?style=flat-square)](https://www.npmjs.org/package/openpayment)
+[![NPM Package](https://img.shields.io/npm/v/openpayment.svg)](https://www.npmjs.org/package/openpayment)
 [![CI](https://github.com/noncept/openpayment/actions/workflows/ci.yml/badge.svg)](https://github.com/noncept/openpayment/actions/workflows/ci.yml)
 [![MIT licensed](https://img.shields.io/github/license/noncept/openpayment)](https://github.com/noncept/openpayment/blob/main/LICENSE)
 
